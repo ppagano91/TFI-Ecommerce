@@ -1,0 +1,22 @@
+[
+  { "id": 1, "nombre": "Notebook Lenovo IdeaPad 3", "descripcion": "Laptop de 15.6'' con procesador AMD Ryzen 5, 8GB RAM y SSD de 512GB." },
+  { "id": 2, "nombre": "Smartphone Samsung Galaxy S23", "descripcion": "Teléfono inteligente con pantalla AMOLED de 6.1'', 8GB RAM y cámara triple de 50MP." },
+  { "id": 3, "nombre": "Mouse Logitech M510", "descripcion": "Mouse inalámbrico ergonómico con sensor óptico de alta precisión." },
+  { "id": 4, "nombre": "Teclado Mecánico Redragon Kumara", "descripcion": "Teclado mecánico con switches Outemu Blue y retroiluminación RGB." },
+  { "id": 5, "nombre": "Monitor LG UltraGear 27''", "descripcion": "Monitor gaming QHD con frecuencia de actualización de 165Hz y 1ms de respuesta." },
+  { "id": 6, "nombre": "Auriculares HyperX Cloud II", "descripcion": "Auriculares gamer con sonido envolvente 7.1 y micrófono desmontable." },
+  { "id": 7, "nombre": "SSD Kingston NV2 1TB", "descripcion": "Unidad de estado sólido NVMe PCIe 4.0 con velocidades de hasta 3500 MB/s." },
+  { "id": 8, "nombre": "Disco Externo Seagate 2TB", "descripcion": "Disco duro portátil USB 3.0 ideal para copias de seguridad." },
+  { "id": 9, "nombre": "Smartwatch Xiaomi Redmi Watch 4", "descripcion": "Reloj inteligente con pantalla AMOLED, sensor de ritmo cardíaco y GPS." },
+  { "id": 10, "nombre": "Tablet Apple iPad 10th Gen", "descripcion": "Tablet con pantalla Liquid Retina de 10.9'', chip A14 Bionic y 64GB de almacenamiento." },
+  { "id": 11, "nombre": "Impresora HP DeskJet Ink Advantage 2775", "descripcion": "Impresora multifunción inalámbrica con escaneo y copia." },
+  { "id": 12, "nombre": "Router TP-Link Archer AX50", "descripcion": "Router Wi-Fi 6 de doble banda con velocidad de hasta 3 Gbps." },
+  { "id": 13, "nombre": "Cámara Web Logitech C920", "descripcion": "Cámara web Full HD 1080p con micrófono estéreo integrado." },
+  { "id": 14, "nombre": "Placa de Video NVIDIA RTX 4070", "descripcion": "GPU de alto rendimiento con 12GB GDDR6X y trazado de rayos en tiempo real." },
+  { "id": 15, "nombre": "Fuente Corsair RM750x", "descripcion": "Fuente de alimentación modular 80+ Gold de 750W." },
+  { "id": 16, "nombre": "Gabinete NZXT H510", "descripcion": "Gabinete ATX minimalista con panel lateral de vidrio templado." },
+  { "id": 17, "nombre": "Cooler CPU Cooler Master Hyper 212", "descripcion": "Disipador de aire con ventilador de 120mm y diseño de torre." },
+  { "id": 18, "nombre": "Memoria RAM Corsair Vengeance 16GB", "descripcion": "Módulo DDR4 de 16GB a 3200MHz, ideal para gaming." },
+  { "id": 19, "nombre": "Cargador Anker PowerPort 65W", "descripcion": "Cargador rápido con puertos USB-C y tecnología Power Delivery." },
+  { "id": 20, "nombre": "Parlante Bluetooth JBL Flip 6", "descripcion": "Parlante portátil resistente al agua con sonido potente y batería de 12 horas." }
+]

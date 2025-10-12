@@ -3,6 +3,12 @@ package com.techlab.app;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.text.Normalizer;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.io.FileReader;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.Map;
 
 public class Main {
 
@@ -14,7 +20,8 @@ public class Main {
     boolean salir = false;
     // ArrayList<String> productosDB = new ArrayList<>();
     // ArrayList<String> productosDB = cargarProductosIniciales();
-    productosDB = cargarProductosIniciales();
+    // productosDB = cargarProductosIniciales();
+    productosDB = cargarProductosDesdeJSON();
 
     while (!salir) {
       mostrarMenuPrincipal();
@@ -110,6 +117,33 @@ public class Main {
         System.out.print("Ingrese un número válido: ");
       }
     }
+  }
+
+  public static ArrayList<String> cargarProductosDesdeJSON() {
+    ArrayList<String> productos = new ArrayList<>();
+
+    try {
+      FileReader reader = new FileReader("src/data/data.json");
+
+      // Leemos una lista genérica de objetos (cada uno representando un producto)
+      Type tipoLista = new TypeToken<ArrayList<Map<String, Object>>>(){}.getType();
+      Gson gson = new Gson();
+      ArrayList<Map<String, Object>> listaJSON = gson.fromJson(reader, tipoLista);
+
+      // De cada producto, solo tomamos el "nombre"
+      for (Map<String, Object> prod : listaJSON) {
+        Object nombre = prod.get("nombre");
+        if (nombre != null) {
+          productos.add(nombre.toString());
+        }
+      }
+
+      reader.close();
+    } catch (IOException e) {
+      System.out.println("⚠️ Error al leer el archivo JSON: " + e.getMessage());
+    }
+
+    return productos;
   }
 
   public static void crearProducto(ArrayList<String> productos){
