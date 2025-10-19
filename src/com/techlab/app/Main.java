@@ -8,12 +8,14 @@ import com.google.gson.reflect.TypeToken;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Iterator;
 
 public class Main {
 
   private static final Scanner scanner = new Scanner(System.in);
-  private static ArrayList<String> productosDB = new ArrayList<>();
+  private static ArrayList<Map<String, String>> productosDB = new ArrayList<>();
 
 
   public static void main(String[] args) {
@@ -60,8 +62,9 @@ public class Main {
       System.out.println("1. Listar productos");
       System.out.println("2. Agregar producto");
       System.out.println("3. Buscar producto");
-      System.out.println("4. Eliminar producto");
-      System.out.println("5. Volver al menú principal");
+      System.out.println("4. Actualizar producto");
+      System.out.println("5. Eliminar producto");
+      System.out.println("6. Volver al menú principal");
       System.out.print("Seleccione una opción: ");
 
       int opcion = leerEntero();
@@ -77,11 +80,18 @@ public class Main {
         }
         case 3 -> {
           System.out.println("\n[Simulación] Buscando producto...");
-          ArrayList<String> productosEncontrados = buscarProductoPorNombre(productosDB);
+          ArrayList<Map<String, String>> productosEncontrados = buscarProductoPorNombre(productosDB);
           listarProductos(productosEncontrados);
         }
-        case 4 -> System.out.println("\n[Simulación] Eliminando producto...");
-        case 5 -> volver = true;
+        case 4 -> {
+          System.out.println("\n[Simulación] Actualizando producto...");
+          actualizarProducto(productosDB);
+        }
+        case 5 -> {
+          System.out.println("\n[Simulación] Eliminando producto...");
+          eliminarProducto(productosDB);
+        }
+        case 6 -> volver = true;
         default -> System.out.println("⚠️  Opción inválida. Intente nuevamente.");
       }
       pausa();
@@ -119,26 +129,29 @@ public class Main {
     }
   }
 
-  public static ArrayList<String> cargarProductosDesdeJSON() {
-    ArrayList<String> productos = new ArrayList<>();
+  public static ArrayList<Map<String, String>> cargarProductosDesdeJSON() {
+    ArrayList<Map<String, String>> productos = new ArrayList<>();
 
-    try {
-      FileReader reader = new FileReader("src/data/data.json");
-
-      // Leemos una lista genérica de objetos (cada uno representando un producto)
-      Type tipoLista = new TypeToken<ArrayList<Map<String, Object>>>(){}.getType();
+    try (FileReader reader = new FileReader("src/data/data.json")) {
       Gson gson = new Gson();
+      Type tipoLista = new TypeToken<ArrayList<Map<String, Object>>>() {}.getType();
+
       ArrayList<Map<String, Object>> listaJSON = gson.fromJson(reader, tipoLista);
 
-      // De cada producto, solo tomamos el "nombre"
       for (Map<String, Object> prod : listaJSON) {
-        Object nombre = prod.get("nombre");
-        if (nombre != null) {
-          productos.add(nombre.toString());
-        }
+        Map<String, String> p = new HashMap<>();
+        Object idObj = prod.get("id");
+        int id = (idObj instanceof Double)
+            ? ((Double) idObj).intValue()
+            : Integer.parseInt(idObj.toString());
+
+        p.put("id", String.valueOf(id));
+        p.put("nombre", prod.get("nombre").toString());
+        p.put("descripcion", prod.get("descripcion").toString());
+
+        productos.add(p);
       }
 
-      reader.close();
     } catch (IOException e) {
       System.out.println("⚠️ Error al leer el archivo JSON: " + e.getMessage());
     }
@@ -146,15 +159,89 @@ public class Main {
     return productos;
   }
 
-  public static void crearProducto(ArrayList<String> productos){
-    System.out.println("Nuevo Producto");
-    System.out.println("Ingrese el nuevo producto: ");
+  public static void crearProducto(ArrayList<Map<String, String>> productos) {
+    System.out.println("\n=== Nuevo Producto ===");
+    System.out.print("Ingrese el nombre del producto: ");
     String nombre = obtenerEntrada();
 
-    productos.add(nombre);
+    System.out.print("Ingrese la descripción del producto: ");
+    String descripcion = obtenerEntrada();
+
+    // Generar un ID automático (por ejemplo, el siguiente número)
+    String id = String.valueOf(productos.size() + 1);
+
+    // Crear el Map con los datos del producto
+    Map<String, String> nuevoProducto = new HashMap<>();
+    nuevoProducto.put("id", id);
+    nuevoProducto.put("nombre", nombre);
+    nuevoProducto.put("descripcion", descripcion);
+
+    // Agregar a la lista
+    productos.add(nuevoProducto);
+
+    System.out.println("✅ Producto agregado con ID: " + id);
   }
 
-  public static void listarProductos(ArrayList<String> productos) {
+  public static void actualizarProducto(ArrayList<Map<String, String>> productos) {
+    System.out.print("Ingrese el ID del producto a actualizar: ");
+    String idBuscado = obtenerEntrada().trim();
+
+    boolean encontrado = false;
+
+    for (Map<String, String> producto : productos) {
+      if (producto.get("id").equals(idBuscado)) {
+        System.out.println("Producto encontrado:");
+        System.out.println("Nombre actual: " + producto.get("nombre"));
+        System.out.println("Descripción actual: " + producto.get("descripcion"));
+
+        System.out.print("Ingrese nuevo nombre (o Enter para mantener): ");
+        String nuevoNombre = obtenerEntrada();
+        if (!nuevoNombre.isEmpty()) {
+          producto.put("nombre", nuevoNombre);
+        }
+
+        System.out.print("Ingrese nueva descripción (o Enter para mantener): ");
+        String nuevaDescripcion = obtenerEntrada();
+        if (!nuevaDescripcion.isEmpty()) {
+          producto.put("descripcion", nuevaDescripcion);
+        }
+
+        System.out.println("✅ Producto actualizado correctamente.");
+        encontrado = true;
+        break;
+      }
+    }
+
+    if (!encontrado) {
+      System.out.println("⚠️ No se encontró un producto con ID " + idBuscado);
+    }
+  }
+
+  private static void eliminarProducto(ArrayList<Map<String, String>> productosDB) {
+    System.out.print("Ingrese el ID del producto a eliminar: ");
+    int idEliminar = leerEntero();
+
+    boolean encontrado = false;
+
+    Iterator<Map<String, String>> iterator = productosDB.iterator();
+    while (iterator.hasNext()) {
+      Map<String, String> producto = iterator.next();
+      int id = Integer.parseInt(producto.get("id"));
+      if (id == idEliminar) {
+        iterator.remove();
+        encontrado = true;
+        System.out.println("✅ Producto eliminado correctamente.");
+        break;
+      }
+    }
+
+    if (!encontrado) {
+      System.out.println("⚠️ No se encontró un producto con ese ID.");
+    }
+  }
+
+
+  public static void listarProductos(ArrayList<Map<String, String>> productos) {
     System.out.println("\n===============================");
     System.out.println("       LISTA DE PRODUCTOS      ");
     System.out.println("===============================");
@@ -162,15 +249,24 @@ public class Main {
     if (productos.isEmpty()) {
       System.out.println("⚠️  No hay productos cargados.");
     } else {
-      for (int i = 0; i < productos.size(); i++) {
-        System.out.printf("%2d) %-40s%n", (i + 1), productos.get(i));
+      System.out.printf("%-5s %-40s %-50s%n", "ID", "NOMBRE", "DESCRIPCIÓN");
+      System.out.println("--------------------------------------------------------------------------");
+      for (Map<String, String> producto : productos) {
+        String id = producto.get("id");
+        int idInt = Integer.parseInt(producto.get("id"));
+
+        String nombre = producto.get("nombre");
+
+        String descripcion = producto.get("descripcion");
+
+        System.out.printf("%-5d %-40s %-60s%n", idInt, nombre, descripcion);
+
       }
     }
 
-    System.out.println("===============================");
+    System.out.println("==========================================================================");
     System.out.println("Total de productos: " + productos.size());
   }
-
 
   public static ArrayList<String> cargarProductosIniciales() {
     ArrayList<String> productos = new ArrayList<>();
@@ -204,19 +300,21 @@ public class Main {
     return texto.trim();
   }
 
-  public static ArrayList<String> buscarProductoPorNombre(ArrayList<String> productos){
-    ArrayList<String> productosEncontrados = new ArrayList<>();
-    System.out.println("Ingrese nombre de producto: ");
+  public static ArrayList<Map<String, String>> buscarProductoPorNombre(ArrayList<Map<String, String>> productos) {
+    ArrayList<Map<String, String>> productosEncontrados = new ArrayList<>();
+    System.out.print("Ingrese nombre de producto a buscar: ");
     String busqueda = normalizar(obtenerEntrada());
 
-    for (String producto : productos){
-      if (normalizar(producto).contains(busqueda.trim().toLowerCase())){
+    for (Map<String, String> producto : productos) {
+      String nombre = normalizar(producto.get("nombre"));
+      if (nombre.contains(busqueda)) {
         productosEncontrados.add(producto);
       }
     }
 
     return productosEncontrados;
   }
+
 
 
   /* UTILIDADES */
