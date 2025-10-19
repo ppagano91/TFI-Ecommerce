@@ -1,5 +1,7 @@
 package com.techlab.app;
 
+import com.techlab.models.Producto;
+import com.techlab.utils.JsonUtils;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.text.Normalizer;
@@ -15,7 +17,8 @@ import java.util.Iterator;
 public class Main {
 
   private static final Scanner scanner = new Scanner(System.in);
-  private static ArrayList<Map<String, String>> productosDB = new ArrayList<>();
+  //private static ArrayList<Map<String, String>> productosDB = new ArrayList<>();
+  private static ArrayList<Producto> productosDB = new ArrayList<>();
 
 
   public static void main(String[] args) {
@@ -76,20 +79,20 @@ public class Main {
         }
         case 2 -> {
           System.out.println("\n[Simulación] Agregando producto...");
-          crearProducto(productosDB);
+          //crearProducto(productosDB);
         }
         case 3 -> {
           System.out.println("\n[Simulación] Buscando producto...");
-          ArrayList<Map<String, String>> productosEncontrados = buscarProductoPorNombre(productosDB);
-          listarProductos(productosEncontrados);
+          //ArrayList<Map<String, String>> productosEncontrados = buscarProductoPorNombre(productosDB);
+          //listarProductos(productosEncontrados);
         }
         case 4 -> {
           System.out.println("\n[Simulación] Actualizando producto...");
-          actualizarProducto(productosDB);
+          //actualizarProducto(productosDB);
         }
         case 5 -> {
           System.out.println("\n[Simulación] Eliminando producto...");
-          eliminarProducto(productosDB);
+          //eliminarProducto(productosDB);
         }
         case 6 -> volver = true;
         default -> System.out.println("⚠️  Opción inválida. Intente nuevamente.");
@@ -129,8 +132,8 @@ public class Main {
     }
   }
 
-  public static ArrayList<Map<String, String>> cargarProductosDesdeJSON() {
-    ArrayList<Map<String, String>> productos = new ArrayList<>();
+  public static ArrayList<Producto> cargarProductosDesdeJSON() {
+    ArrayList<Producto> productos = new ArrayList<>();
 
     try (FileReader reader = new FileReader("src/data/data.json")) {
       Gson gson = new Gson();
@@ -139,16 +142,19 @@ public class Main {
       ArrayList<Map<String, Object>> listaJSON = gson.fromJson(reader, tipoLista);
 
       for (Map<String, Object> prod : listaJSON) {
-        Map<String, String> p = new HashMap<>();
+        // Convertir id (puede venir como Double o String)
         Object idObj = prod.get("id");
-        int id = (idObj instanceof Double)
-            ? ((Double) idObj).intValue()
+        int id = (idObj instanceof Number)
+            ? ((Number) idObj).intValue()
             : Integer.parseInt(idObj.toString());
 
-        p.put("id", String.valueOf(id));
-        p.put("nombre", prod.get("nombre").toString());
-        p.put("descripcion", prod.get("descripcion").toString());
+        String nombre = prod.get("nombre").toString();
+        String descripcion = prod.get("descripcion").toString();
 
+        double precio = JsonUtils.parseDouble(prod.get("precio"), 0.0);
+        int stock = JsonUtils.parseInt(prod.get("stock"), 0);
+
+        Producto p = new Producto(id, nombre, descripcion, stock, precio);
         productos.add(p);
       }
 
@@ -241,7 +247,7 @@ public class Main {
   }
 
 
-  public static void listarProductos(ArrayList<Map<String, String>> productos) {
+  public static void listarProductos(ArrayList<Producto> productos) {
     System.out.println("\n===============================");
     System.out.println("       LISTA DE PRODUCTOS      ");
     System.out.println("===============================");
@@ -249,22 +255,22 @@ public class Main {
     if (productos.isEmpty()) {
       System.out.println("⚠️  No hay productos cargados.");
     } else {
-      System.out.printf("%-5s %-40s %-50s%n", "ID", "NOMBRE", "DESCRIPCIÓN");
-      System.out.println("--------------------------------------------------------------------------");
-      for (Map<String, String> producto : productos) {
-        String id = producto.get("id");
-        int idInt = Integer.parseInt(producto.get("id"));
+      System.out.printf("%-5s %-40s %-10s %-50s%n", "ID", "NOMBRE", "PRECIO", "DESCRIPCIÓN");
+      System.out.println("-----------------------------------------------------------------------------------------------------------------------------");
+      for (Producto producto : productos) {
+        int id = producto.getId();
 
-        String nombre = producto.get("nombre");
+        String nombre = producto.getName();
+        String descripcion = producto.getDescription();
+        int stock = producto.getStock();
+        double precio = producto.getPrice();
 
-        String descripcion = producto.get("descripcion");
-
-        System.out.printf("%-5d %-40s %-60s%n", idInt, nombre, descripcion);
+        System.out.printf("%-5d %-40s $ %-8.2f %-60s%n", id, nombre, precio, descripcion);
 
       }
     }
 
-    System.out.println("==========================================================================");
+    System.out.println("=============================================================================================================================");
     System.out.println("Total de productos: " + productos.size());
   }
 
