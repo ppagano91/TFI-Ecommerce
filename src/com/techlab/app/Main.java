@@ -76,6 +76,7 @@ public class Main {
         case 1 -> {
           System.out.println("\n[Simulación] Listando productos...");
           listarProductos(productosDB);
+          pausa();
         }
         case 2 -> {
           System.out.println("\n[Simulación] Agregando producto...");
@@ -83,8 +84,9 @@ public class Main {
         }
         case 3 -> {
           System.out.println("\n[Simulación] Buscando producto...");
-          //ArrayList<Map<String, String>> productosEncontrados = buscarProductoPorNombre(productosDB);
-          //listarProductos(productosEncontrados);
+          ArrayList<Producto> productosEncontrados = buscarProductoPorNombre(productosDB);
+          listarProductos(productosEncontrados);
+          pausa();
         }
         case 4 -> {
           System.out.println("\n[Simulación] Actualizando producto...");
@@ -97,7 +99,6 @@ public class Main {
         case 6 -> volver = true;
         default -> System.out.println("⚠️  Opción inválida. Intente nuevamente.");
       }
-      pausa();
     }
   }
 
@@ -306,13 +307,13 @@ public class Main {
     return texto.trim();
   }
 
-  public static ArrayList<Map<String, String>> buscarProductoPorNombre(ArrayList<Map<String, String>> productos) {
-    ArrayList<Map<String, String>> productosEncontrados = new ArrayList<>();
+  public static ArrayList<Producto> buscarProductoPorNombre(ArrayList<Producto> productos) {
+    ArrayList<Producto> productosEncontrados = new ArrayList<>();
     System.out.print("Ingrese nombre de producto a buscar: ");
     String busqueda = normalizar(obtenerEntrada());
 
-    for (Map<String, String> producto : productos) {
-      String nombre = normalizar(producto.get("nombre"));
+    for (Producto producto : productos) {
+      String nombre = normalizar(producto.getName());
       if (nombre.contains(busqueda)) {
         productosEncontrados.add(producto);
       }
