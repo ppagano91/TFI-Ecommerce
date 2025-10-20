@@ -36,7 +36,7 @@ public class Main {
       switch (opcion) {
         case 1 -> menuProductos();
         // case 2 -> menuPedidos();
-        case 3 -> {
+        case 0 -> {
           System.out.println("\nSaliendo del sistema...");
           salir = true;
         }
@@ -53,7 +53,7 @@ public class Main {
     imprimirLinea('=', 50);
     System.out.println("1. Gestionar Productos");
     // System.out.println("2. Gestionar Pedidos");
-    System.out.println("3. Salir");
+    System.out.println("0. Salir");
     imprimirLinea('=', 50);
   }
 
@@ -61,15 +61,17 @@ public class Main {
     boolean volver = false;
 
     while (!volver) {
-      System.out.println("\n----- GESTIÓN DE PRODUCTOS -----");
+      imprimirLinea('-',32);
+      System.out.println("----- GESTIÓN DE PRODUCTOS -----");
+      imprimirLinea('-',32);
       System.out.println("1. Listar productos");
       System.out.println("2. Agregar producto");
       System.out.println("3. Buscar producto por nombre");
       System.out.println("4. Buscar producto por ID");
       System.out.println("5. Actualizar producto");
       System.out.println("6. Eliminar producto");
-      System.out.println("7. Volver al menú principal");
-      System.out.print("Seleccione una opción: ");
+      System.out.println("0. Volver al menú principal");
+      System.out.print("\nSeleccione una opción: ");
 
       int opcion = leerEntero();
 
@@ -101,7 +103,7 @@ public class Main {
         case 6 -> {
           eliminarProducto(productosDB);
         }
-        case 7 -> volver = true;
+        case 0 -> volver = true;
         default -> System.out.println("⚠️  Opción inválida. Intente nuevamente.");
       }
     }
@@ -114,7 +116,7 @@ public class Main {
       System.out.println("\n----- GESTIÓN DE PEDIDOS -----");
       System.out.println("1. Crear nuevo pedido");
       System.out.println("2. Listar pedidos existentes");
-      System.out.println("3. Volver al menú principal");
+      System.out.println("0. Volver al menú principal");
       System.out.print("Seleccione una opción: ");
 
       int opcion = leerEntero();
@@ -122,7 +124,7 @@ public class Main {
       switch (opcion) {
         case 1 -> System.out.println("\n[Simulación] Creando nuevo pedido...");
         case 2 -> System.out.println("\n[Simulación] Listando pedidos...");
-        case 3 -> volver = true;
+        case 0 -> volver = true;
         default -> System.out.println("⚠️  Opción inválida. Intente nuevamente.");
       }
     }
@@ -222,6 +224,7 @@ public class Main {
 
   public static void actualizarProducto(ArrayList<Producto> productos) {
     Producto productoEncontrado = buscarProductoPorId(productos);
+    imprimirLinea('*', 50);
 
     if (productoEncontrado == null) {
       System.out.println("⚠️ No se encontró un producto con el ID ingresado");
@@ -414,7 +417,6 @@ public class Main {
   public static void pausa() {
     imprimirLinea('-', 50);
     Scanner entrada = new Scanner(System.in);
-    System.out.println();
     System.out.println("Presione ENTER para continuar...");
     entrada.nextLine();
     imprimirLinea('-', 50);
