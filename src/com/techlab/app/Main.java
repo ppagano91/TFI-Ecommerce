@@ -64,10 +64,11 @@ public class Main {
       System.out.println("\n----- GESTIÓN DE PRODUCTOS -----");
       System.out.println("1. Listar productos");
       System.out.println("2. Agregar producto");
-      System.out.println("3. Buscar producto");
-      System.out.println("4. Actualizar producto");
-      System.out.println("5. Eliminar producto");
-      System.out.println("6. Volver al menú principal");
+      System.out.println("3. Buscar producto por nombre");
+      System.out.println("4. Buscar producto por ID");
+      System.out.println("5. Actualizar producto");
+      System.out.println("6. Eliminar producto");
+      System.out.println("7. Volver al menú principal");
       System.out.print("Seleccione una opción: ");
 
       int opcion = leerEntero();
@@ -79,24 +80,31 @@ public class Main {
           pausa();
         }
         case 2 -> {
-          System.out.println("\n[Simulación] Agregando producto...");
-          //crearProducto(productosDB);
+          crearProducto(productosDB);
         }
         case 3 -> {
-          System.out.println("\n[Simulación] Buscando producto...");
           ArrayList<Producto> productosEncontrados = buscarProductoPorNombre(productosDB);
           listarProductos(productosEncontrados);
           pausa();
         }
         case 4 -> {
-          System.out.println("\n[Simulación] Actualizando producto...");
-          //actualizarProducto(productosDB);
+          Producto productoEncontrado = buscarProductoPorId(productosDB);
+          ArrayList<Producto> productosEncontrados = new ArrayList<>();
+          if (productoEncontrado != null){
+            productosEncontrados.add(productoEncontrado);
+          }
+          listarProductos(productosEncontrados);
+          pausa();
         }
         case 5 -> {
-          System.out.println("\n[Simulación] Eliminando producto...");
-          //eliminarProducto(productosDB);
+          System.out.println("\n[Simulación] Actualizando producto...");
+          actualizarProducto(productosDB);
         }
-        case 6 -> volver = true;
+        case 6 -> {
+          System.out.println("\n[Simulación] Eliminando producto...");
+          eliminarProducto(productosDB);
+        }
+        case 7 -> volver = true;
         default -> System.out.println("⚠️  Opción inválida. Intente nuevamente.");
       }
     }
@@ -166,74 +174,154 @@ public class Main {
     return productos;
   }
 
-  public static void crearProducto(ArrayList<Map<String, String>> productos) {
-    System.out.println("\n=== Nuevo Producto ===");
+  public static void crearProducto(ArrayList<Producto> productos) {
+
+    // Determinar el ID más alto actual
+    int maxId = 0;
+    for (Producto p : productos) {
+      if (p.getId() > maxId) {
+        maxId = p.getId();
+      }
+    }
+    int nuevoId = maxId + 1;
+
     System.out.print("Ingrese el nombre del producto: ");
     String nombre = obtenerEntrada();
 
     System.out.print("Ingrese la descripción del producto: ");
     String descripcion = obtenerEntrada();
 
-    // Generar un ID automático (por ejemplo, el siguiente número)
-    String id = String.valueOf(productos.size() + 1);
+    // Leer stock (entero)
+    int stock = 0;
+    while (true) {
+      System.out.print("Ingrese el stock disponible (entero): ");
+      try {
+        stock = Integer.parseInt(obtenerEntrada());
+        if (stock < 0) {
+          System.out.println("⚠️ El stock no puede ser negativo.");
+          continue;
+        }
+        break;
+      } catch (NumberFormatException e) {
+        System.out.println("⚠️ Ingrese un número válido para el stock.");
+      }
+    }
 
-    // Crear el Map con los datos del producto
-    Map<String, String> nuevoProducto = new HashMap<>();
-    nuevoProducto.put("id", id);
-    nuevoProducto.put("nombre", nombre);
-    nuevoProducto.put("descripcion", descripcion);
+    // Leer precio (float/double)
+    double precio = 0.0;
+    while (true) {
+      System.out.print("Ingrese el precio del producto: ");
+      try {
+        precio = Double.parseDouble(obtenerEntrada());
+        if (precio < 0) {
+          System.out.println("⚠️ El precio no puede ser negativo.");
+          continue;
+        }
+        break;
+      } catch (NumberFormatException e) {
+        System.out.println("⚠️ Ingrese un valor numérico válido para el precio.");
+      }
+    }
 
-    // Agregar a la lista
+    // Crear el nuevo producto
+    Producto nuevoProducto = new Producto(nuevoId, nombre, descripcion, stock, precio);
     productos.add(nuevoProducto);
 
-    System.out.println("✅ Producto agregado con ID: " + id);
+    System.out.println("✅ Producto agregado con ID: " + nuevoId);
   }
 
-  public static void actualizarProducto(ArrayList<Map<String, String>> productos) {
-    System.out.print("Ingrese el ID del producto a actualizar: ");
-    String idBuscado = obtenerEntrada().trim();
+  public static Producto buscarProductoPorId(ArrayList<Producto> productos){
+    int idBuscado;
+    Producto productoEncontrado = null;
+    System.out.print("Ingrese el ID del producto a buscar: ");
+    idBuscado = leerEntero();
 
-    boolean encontrado = false;
-
-    for (Map<String, String> producto : productos) {
-      if (producto.get("id").equals(idBuscado)) {
-        System.out.println("Producto encontrado:");
-        System.out.println("Nombre actual: " + producto.get("nombre"));
-        System.out.println("Descripción actual: " + producto.get("descripcion"));
-
-        System.out.print("Ingrese nuevo nombre (o Enter para mantener): ");
-        String nuevoNombre = obtenerEntrada();
-        if (!nuevoNombre.isEmpty()) {
-          producto.put("nombre", nuevoNombre);
-        }
-
-        System.out.print("Ingrese nueva descripción (o Enter para mantener): ");
-        String nuevaDescripcion = obtenerEntrada();
-        if (!nuevaDescripcion.isEmpty()) {
-          producto.put("descripcion", nuevaDescripcion);
-        }
-
-        System.out.println("✅ Producto actualizado correctamente.");
-        encontrado = true;
+    for (Producto p : productos) {
+      if (p.getId() == idBuscado) {
+        productoEncontrado = p;
         break;
       }
     }
 
-    if (!encontrado) {
-      System.out.println("⚠️ No se encontró un producto con ID " + idBuscado);
-    }
+    return productoEncontrado;
   }
 
-  private static void eliminarProducto(ArrayList<Map<String, String>> productosDB) {
+
+  public static void actualizarProducto(ArrayList<Producto> productos) {
+    Producto productoEncontrado = buscarProductoPorId(productos);
+
+    if (productoEncontrado == null) {
+      System.out.println("⚠️ No se encontró un producto con el ID ingresado");
+      return;
+    }
+
+    System.out.println("Producto encontrado:");
+    System.out.println("Nombre actual: " + productoEncontrado.getName());
+    System.out.println("Descripción actual: " + productoEncontrado.getDescription());
+    System.out.println("Stock actual: " + productoEncontrado.getStock());
+    System.out.println("Precio actual: $" + String.format("%.2f", productoEncontrado.getPrice()));
+    System.out.println("-----------------------------------------------------------------------------------------------------------------------------");
+
+
+    System.out.print("Dejar en blanco los campos que NO desee modificar");
+    System.out.print("Ingrese nuevo nombre: ");
+    String nuevoNombre = obtenerEntrada();
+    if (!nuevoNombre.isEmpty()) {
+      productoEncontrado.setName(nuevoNombre);
+    }
+
+    System.out.print("Ingrese nueva descripción: ");
+    String nuevaDescripcion = obtenerEntrada();
+    if (!nuevaDescripcion.isEmpty()) {
+      productoEncontrado.setDescription(nuevaDescripcion);
+    }
+
+    // Actualizar stock
+    System.out.print("Ingrese nuevo stock: ");
+    String stockStr = obtenerEntrada();
+    if (!stockStr.isEmpty()) {
+      try {
+        int nuevoStock = Integer.parseInt(stockStr);
+        if (nuevoStock >= 0) {
+          productoEncontrado.setStock(nuevoStock);
+        } else {
+          System.out.println("⚠️ Stock no puede ser negativo. Se mantiene el anterior.");
+        }
+      } catch (NumberFormatException e) {
+        System.out.println("⚠️ Stock inválido. Se mantiene el anterior.");
+      }
+    }
+
+    // Actualizar precio
+    System.out.print("Ingrese nuevo precio: ");
+    String precioStr = obtenerEntrada();
+    if (!precioStr.isEmpty()) {
+      try {
+        double nuevoPrecio = Double.parseDouble(precioStr);
+        if (nuevoPrecio >= 0) {
+          productoEncontrado.setPrice(nuevoPrecio);
+        } else {
+          System.out.println("⚠️ Precio no puede ser negativo. Se mantiene el anterior.");
+        }
+      } catch (NumberFormatException e) {
+        System.out.println("⚠️ Precio inválido. Se mantiene el anterior.");
+      }
+    }
+
+    System.out.println("✅ Producto actualizado correctamente.");
+  }
+
+
+  private static void eliminarProducto(ArrayList<Producto> productos) {
     System.out.print("Ingrese el ID del producto a eliminar: ");
     int idEliminar = leerEntero();
 
     boolean encontrado = false;
 
-    Iterator<Map<String, String>> iterator = productosDB.iterator();
+    Iterator<Producto> iterator = productos.iterator();
     while (iterator.hasNext()) {
-      Map<String, String> producto = iterator.next();
-      int id = Integer.parseInt(producto.get("id"));
+      Producto producto = iterator.next();
+      int id = producto.getId();
       if (id == idEliminar) {
         iterator.remove();
         encontrado = true;
@@ -273,23 +361,6 @@ public class Main {
 
     System.out.println("=============================================================================================================================");
     System.out.println("Total de productos: " + productos.size());
-  }
-
-  public static ArrayList<String> cargarProductosIniciales() {
-    ArrayList<String> productos = new ArrayList<>();
-
-    productos.add("Notebook HP Pavilion 15");
-    productos.add("Monitor Samsung 24'' Curvo");
-    productos.add("Teclado Mecánico Redragon Kumara");
-    productos.add("Mouse Logitech MX Master 3");
-    productos.add("Auriculares Sony WH-1000XM4");
-    productos.add("Impresora HP DeskJet Ink Advantage 2775");
-    productos.add("Tablet Samsung Galaxy Tab S6 Lite");
-    productos.add("Smartphone Motorola Edge 40");
-    productos.add("SSD Kingston 1TB NVMe");
-    productos.add("Parlante Bluetooth JBL Flip 6");
-
-    return productos;
   }
 
   public static void pausa() {
@@ -336,7 +407,4 @@ public class Main {
 
     return texto;
   }
-
-
-
 }
