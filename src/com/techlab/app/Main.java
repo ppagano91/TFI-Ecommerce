@@ -35,7 +35,7 @@ public class Main {
 
       switch (opcion) {
         case 1 -> menuProductos();
-        case 2 -> menuPedidos();
+        // case 2 -> menuPedidos();
         case 3 -> {
           System.out.println("\nSaliendo del sistema...");
           salir = true;
@@ -48,13 +48,13 @@ public class Main {
   }
 
   private static void mostrarMenuPrincipal() {
-    System.out.println("\n==============================");
+    imprimirLinea('=', 50);
     System.out.println("     MENÚ PRINCIPAL - APP     ");
-    System.out.println("==============================");
+    imprimirLinea('=', 50);
     System.out.println("1. Gestionar Productos");
-    System.out.println("2. Gestionar Pedidos");
+    // System.out.println("2. Gestionar Pedidos");
     System.out.println("3. Salir");
-    System.out.println("==============================");
+    imprimirLinea('=', 50);
   }
 
   private static void menuProductos() {
@@ -75,7 +75,6 @@ public class Main {
 
       switch (opcion) {
         case 1 -> {
-          System.out.println("\n[Simulación] Listando productos...");
           listarProductos(productosDB);
           pausa();
         }
@@ -97,11 +96,9 @@ public class Main {
           pausa();
         }
         case 5 -> {
-          System.out.println("\n[Simulación] Actualizando producto...");
           actualizarProducto(productosDB);
         }
         case 6 -> {
-          System.out.println("\n[Simulación] Eliminando producto...");
           eliminarProducto(productosDB);
         }
         case 7 -> volver = true;
@@ -127,16 +124,6 @@ public class Main {
         case 2 -> System.out.println("\n[Simulación] Listando pedidos...");
         case 3 -> volver = true;
         default -> System.out.println("⚠️  Opción inválida. Intente nuevamente.");
-      }
-    }
-  }
-
-  private static int leerEntero() {
-    while (true) {
-      try {
-        return Integer.parseInt(scanner.nextLine().trim());
-      } catch (NumberFormatException e) {
-        System.out.print("Ingrese un número válido: ");
       }
     }
   }
@@ -230,21 +217,7 @@ public class Main {
     System.out.println("✅ Producto agregado con ID: " + nuevoId);
   }
 
-  public static Producto buscarProductoPorId(ArrayList<Producto> productos){
-    int idBuscado;
-    Producto productoEncontrado = null;
-    System.out.print("Ingrese el ID del producto a buscar: ");
-    idBuscado = leerEntero();
 
-    for (Producto p : productos) {
-      if (p.getId() == idBuscado) {
-        productoEncontrado = p;
-        break;
-      }
-    }
-
-    return productoEncontrado;
-  }
 
 
   public static void actualizarProducto(ArrayList<Producto> productos) {
@@ -260,7 +233,7 @@ public class Main {
     System.out.println("Descripción actual: " + productoEncontrado.getDescription());
     System.out.println("Stock actual: " + productoEncontrado.getStock());
     System.out.println("Precio actual: $" + String.format("%.2f", productoEncontrado.getPrice()));
-    System.out.println("-----------------------------------------------------------------------------------------------------------------------------");
+    imprimirLinea('-', 50);
 
 
     System.out.print("Dejar en blanco los campos que NO desee modificar");
@@ -313,6 +286,7 @@ public class Main {
 
 
   private static void eliminarProducto(ArrayList<Producto> productos) {
+    imprimirLinea('*', 50);
     System.out.print("Ingrese el ID del producto a eliminar: ");
     int idEliminar = leerEntero();
 
@@ -359,27 +333,15 @@ public class Main {
       }
     }
 
-    System.out.println("=============================================================================================================================");
+    imprimirLinea('=', 50);
     System.out.println("Total de productos: " + productos.size());
   }
 
-  public static void pausa() {
-    System.out.println("----------------------------------------");
-    Scanner entrada = new Scanner(System.in);
-    System.out.println();
-    System.out.println("Presione ENTER para continuar...");
-    entrada.nextLine();
-    System.out.println("----------------------------------------");
-  }
 
-  public static String obtenerEntrada() {
-    Scanner entrada = new Scanner(System.in);
-    String texto = entrada.nextLine();
-    return texto.trim();
-  }
 
   public static ArrayList<Producto> buscarProductoPorNombre(ArrayList<Producto> productos) {
     ArrayList<Producto> productosEncontrados = new ArrayList<>();
+    imprimirLinea('*', 50);
     System.out.print("Ingrese nombre de producto a buscar: ");
     String busqueda = normalizar(obtenerEntrada());
 
@@ -393,9 +355,42 @@ public class Main {
     return productosEncontrados;
   }
 
+  public static Producto buscarProductoPorId(ArrayList<Producto> productos){
+    int idBuscado;
+    Producto productoEncontrado = null;
+    imprimirLinea('*', 50);
+    System.out.print("Ingrese el ID del producto a buscar: ");
+    idBuscado = leerEntero();
+
+    for (Producto p : productos) {
+      if (p.getId() == idBuscado) {
+        productoEncontrado = p;
+        break;
+      }
+    }
+
+    return productoEncontrado;
+  }
+
 
 
   /* UTILIDADES */
+  private static int leerEntero() {
+    while (true) {
+      try {
+        return Integer.parseInt(scanner.nextLine().trim());
+      } catch (NumberFormatException e) {
+        System.out.print("Ingrese un número válido: ");
+      }
+    }
+  }
+
+  public static String obtenerEntrada() {
+    Scanner entrada = new Scanner(System.in);
+    String texto = entrada.nextLine();
+    return texto.trim();
+  }
+
   public static String normalizar(String texto) {
     if (texto == null) return "";
     // Elimina espacios al inicio y al final
@@ -407,4 +402,22 @@ public class Main {
 
     return texto;
   }
+
+  public static void imprimirLinea(char caracter, int cantidad) {
+    StringBuilder linea = new StringBuilder();
+    for(int i = 0; i < cantidad; i++) {
+      linea.append(caracter);
+    }
+    System.out.println(linea);
+  }
+
+  public static void pausa() {
+    imprimirLinea('-', 50);
+    Scanner entrada = new Scanner(System.in);
+    System.out.println();
+    System.out.println("Presione ENTER para continuar...");
+    entrada.nextLine();
+    imprimirLinea('-', 50);
+  }
+
 }
